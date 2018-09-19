@@ -1,27 +1,27 @@
 
 
 const express = require('express');
+const path = require('path')
 const app = express();
 const sensor = require('node-dht-sensor');
-const getSensorReadings = require('./get-sensor-readings')
+const getCachedSensorReadings = require('./get-cached-sensor-readings')
+
+app.use('/public', express.static(path.join(__dirname,'public')))
 
 app.get('/temperature',function(req,res){
-  getSensorReadings((err,temperature,humidity) => {
-  if(!err){
-   res.send(temperature.toFixed(1) + ' \xB0C');
-  }
- })
+   res.send('<strong>' + getCachedSensorReadings.getTemperature().toFixed(1) +'</strong>' + ' \xB0C');
 })
 
 
 app.get('/humidity', function(req,res) {
-  getSensorReadings((err,temperature,humidity) => {
-  if(!err){
-   res.send(humidity.toFixed(1) + ' %');
-  }
- });
-});
 
+   res.send('<strong>' + getCachedSensorReadings.getHumidity().toFixed(1) + '</strong>'+' %');
+})
+
+app.get('/public',function(req,res){
+   res.send(path.join(__dirname,'index.html'))
+
+})
 
 app.listen(3000,function(){
 
