@@ -4,8 +4,8 @@
 const getSensorReadings = require('./get-sensor-readings')
 
 const cache = {
-  temperature: null,
-  humidity: null
+  temperature: 0,
+  humidity: 0
 }
 
 setInterval(() =>  {
