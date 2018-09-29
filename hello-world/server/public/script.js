@@ -69,6 +69,34 @@ const humidityChartConfig = new Chart(humidityCanvasCtx,
    }
 })
 
+
+const addSocketListeners = () => {
+
+  const socket = io()
+
+  socket.on('new-temperature',data => {
+   const now = new Date()
+   const timeNow = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds()
+
+   pushData(temperatureChartConfig.data.labels,timeNow,10)
+   pushData(temperatureChartConfig.data.datasets[0].data,data.value,10)
+   temperatureChartConfig.update()
+   temperatureDisplay.innerHTML = '<strong>'+ data.value + '</strong>'
+  })
+
+  socket.on('new-humidity',data => {
+   const now = new Date()
+   const timeNow = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds()
+
+   pushData(humidityChartConfig.data.labels,timeNow,10)
+   pushData(humidityChartConfig.data.datasets[0].data,data.value,10)
+   humidityChartConfig.update()
+   humidityDisplay.innerHTML = '<strong>'+ data.value + '</strong>'
+  })
+
+}
+
+
 const fetchTemperature = () => {
 fetch('/temperature')
   .then(results => {
@@ -209,10 +237,11 @@ const fetchHumidityRange = () => {
 
 if(!getParameterByName('start') &&
    !getParameterByName('end')) {
-  setInterval(() => {
-    fetchTemperature()
-    fetchHumidity()
-  },2000)
+ addSocketListeners()
+ //setInterval(() => {
+  //  fetchTemperature()
+  //  fetchHumidity()
+ // },2000)
 
  fetchTemperatureHistory()
  fetchHumidityHistory()
